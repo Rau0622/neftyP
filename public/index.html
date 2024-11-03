@@ -164,10 +164,14 @@
             body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
         })
         .then(response => {
-            if (!response.ok) throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
-            return response.json(); // Retorna a nova tarefa criada
+            if (!response.ok) {
+                console.error('Erro na resposta do servidor:', response);
+                throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
+            }
+            return response.json(); // Se a resposta for válida, retorna a nova tarefa
         })
-        .then(() => {
+        .then(tarefa => {
+            console.log('Tarefa adicionada com sucesso:', tarefa);
             document.getElementById('tarefaForm').reset();
             carregarTarefas(); // Atualiza a lista de tarefas após adicionar
         })
