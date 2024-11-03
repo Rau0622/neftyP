@@ -166,9 +166,11 @@
         .then(response => {
             if (!response.ok) {
                 console.error('Erro na resposta do servidor:', response);
-                throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
+                return response.json().then(err => { // Extraindo mensagem de erro do corpo da resposta
+                    throw new Error(err.message || 'Erro ao incluir a tarefa');
+                });
             }
-            return response.json(); // Se a resposta for válida, retorna a nova tarefa
+            return response.json();
         })
         .then(tarefa => {
             console.log('Tarefa adicionada com sucesso:', tarefa);
@@ -177,7 +179,7 @@
         })
         .catch(error => {
             console.error('Erro ao incluir tarefa:', error);
-            alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
+            alert('Erro ao incluir tarefa: ' + error.message); // Mostra a mensagem de erro
         });
     } else {
         alert("Por favor, preencha todos os campos corretamente.");
