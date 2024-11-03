@@ -165,11 +165,11 @@
         })
         .then(response => {
             if (!response.ok) throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
-            return response.json(); // Retorna a nova tarefa criada, se necessário
+            return response.json(); // Retorna a nova tarefa criada
         })
         .then(() => {
             document.getElementById('tarefaForm').reset();
-            carregarTarefas(); // Atualiza a lista de tarefas
+            carregarTarefas(); // Atualiza a lista de tarefas após adicionar
         })
         .catch(error => {
             console.error('Erro ao incluir tarefa:', error);
