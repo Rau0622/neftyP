@@ -155,8 +155,8 @@
     const custo = parseFloat(document.getElementById('custo').value.replace(',', '.'));
     const data_limite = document.getElementById('data_limite').value;
 
-    if (!isNaN(custo)) {
-        const dataLimiteFormatada = converterData(data_limite);
+    if (!isNaN(custo) && nome && data_limite) {
+        const dataLimiteFormatada = converterData(data_limite); // Converter a data para o formato YYYY-MM-DD
 
         fetch(url, {
             method: 'POST',
@@ -167,19 +167,19 @@
             if (!response.ok) {
                 throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
             }
-            return response.json(); // Aqui espera-se o JSON da nova tarefa
+            return response.json(); 
         })
         .then(novaTarefa => {
             console.log('Nova tarefa adicionada:', novaTarefa);
             document.getElementById('tarefaForm').reset();
-            carregarTarefas(); // Isso deve chamar novamente para carregar as tarefas
+            carregarTarefas(); 
         })
         .catch(error => {
             console.error('Erro ao incluir tarefa:', error);
             alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
         });
     } else {
-        alert("Por favor, insira um custo válido.");
+        alert("Por favor, insira um custo válido e preencha todos os campos.");
     }
 }
 
