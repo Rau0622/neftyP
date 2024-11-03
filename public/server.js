@@ -25,12 +25,19 @@ app.post('/tarefas', (req, res) => {
         const ordem_apresentacao = result[0].max_ordem + 1;
 
         db.query('INSERT INTO Tarefas (nome, custo, data_limite, ordem_apresentacao) VALUES (?, ?, ?, ?)', 
-        [nome, custo, data_limite, ordem_apresentacao], (err) => {
+        [nome, custo, data_limite, ordem_apresentacao], (err, result) => {
             if (err) {
                 console.error('Erro ao inserir tarefa:', err);
                 return res.status(500).send(err);
             }
-            res.sendStatus(201);
+            // Retorna a nova tarefa criada
+            res.status(201).json({
+                id: result.insertId,
+                nome,
+                custo,
+                data_limite,
+                ordem_apresentacao
+            });
         });
     });
 });
