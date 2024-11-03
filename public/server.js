@@ -21,16 +21,19 @@ app.post('/tarefas', (req, res) => {
     console.log('Dados recebidos para inclusão:', { nome, custo, data_limite });
 
     db.query('SELECT MAX(ordem_apresentacao) AS max_ordem FROM Tarefas', (err, result) => {
-        if (err) return res.status(500).send(err);
-        const ordem_apresentacao = result[0].max_ordem + 1;
+        if (err) {
+            console.error('Erro ao obter a ordem máxima:', err);
+            return res.status(500).json({ message: 'Erro ao obter a ordem máxima.' }); // Resposta JSON para erro
+        }
+        const ordem_apresentacao = (result[0].max_ordem || 0) + 1;
 
         db.query('INSERT INTO Tarefas (nome, custo, data_limite, ordem_apresentacao) VALUES (?, ?, ?, ?)', 
         [nome, custo, data_limite, ordem_apresentacao], (err, result) => {
             if (err) {
                 console.error('Erro ao inserir tarefa:', err);
-                return res.status(500).send(err);
+                return res.status(500).json({ message: 'Erro ao inserir tarefa.' }); // Resposta JSON para erro
             }
-            // Retorna a nova tarefa criada
+            // Retorna a nova tarefa criada com status 201
             res.status(201).json({
                 id: result.insertId,
                 nome,
@@ -41,6 +44,7 @@ app.post('/tarefas', (req, res) => {
         });
     });
 });
+
 
 // Editar uma tarefa
 app.put('/tarefas/:id', (req, res) => {
