@@ -151,34 +151,34 @@
         }
 
         function incluirTarefa() {
-            const nome = document.getElementById('nome').value;
-            const custo = parseFloat(document.getElementById('custo').value.replace(',', '.'));
-            const data_limite = document.getElementById('data_limite').value;
+    const nome = document.getElementById('nome').value;
+    const custo = parseFloat(document.getElementById('custo').value.replace(',', '.'));
+    const data_limite = document.getElementById('data_limite').value;
 
-            if (!isNaN(custo)) {
-                const dataLimiteFormatada = converterData(data_limite);
+    if (!isNaN(custo) && nome && data_limite) {
+        const dataLimiteFormatada = converterData(data_limite);
 
-                fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
-                    return response.json(); // Se você estiver retornando dados, pode ser útil
-                })
-                .then(() => {
-                    document.getElementById('tarefaForm').reset();
-                    carregarTarefas(); // Atualiza a lista de tarefas
-                })
-                .catch(error => {
-                    console.error('Erro ao incluir tarefa:', error);
-                    alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
-                });
-            } else {
-                alert("Por favor, insira um custo válido.");
-            }
-        }
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
+            return response.json(); // Retorna a nova tarefa criada, se necessário
+        })
+        .then(() => {
+            document.getElementById('tarefaForm').reset();
+            carregarTarefas(); // Atualiza a lista de tarefas
+        })
+        .catch(error => {
+            console.error('Erro ao incluir tarefa:', error);
+            alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
+        });
+    } else {
+        alert("Por favor, preencha todos os campos corretamente.");
+    }
+}
 
         function excluirTarefa(id) {
             if (confirm("Você tem certeza que deseja excluir esta tarefa?")) {
@@ -206,26 +206,29 @@
         }
 
         function salvarEdicao() {
-            const nome = document.getElementById('edit_nome').value;
-            const custo = parseFloat(document.getElementById('edit_custo').value.replace(',', '.'));
-            const data_limite = document.getElementById('edit_data_limite').value;
+    const nome = document.getElementById('edit_nome').value;
+    const custo = parseFloat(document.getElementById('edit_custo').value.replace(',', '.'));
+    const data_limite = document.getElementById('edit_data_limite').value;
 
-            fetch(`${url}/${tarefaAtualId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome, custo, data_limite })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Erro ao editar a tarefa: ' + response.statusText);
-                cancelarEdicao();
-                carregarTarefas(); // Atualiza a lista de tarefas
-            })
-            .catch(error => {
-                console.error('Erro ao salvar edição:', error);
-                alert('Erro ao salvar edição. Por favor, tente novamente.');
-            });
-        }
-
+    if (!isNaN(custo) && nome && data_limite) {
+        fetch(`${url}/${tarefaAtualId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, custo, data_limite: converterData(data_limite) })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao editar a tarefa: ' + response.statusText);
+            cancelarEdicao();
+            carregarTarefas(); // Atualiza a lista de tarefas
+        })
+        .catch(error => {
+            console.error('Erro ao salvar edição:', error);
+            alert('Erro ao salvar edição. Por favor, tente novamente.');
+        });
+    } else {
+        alert("Por favor, preencha todos os campos corretamente.");
+    }
+}
         function cancelarEdicao() {
             tarefaAtualId = null;
             document.getElementById('formularioEdicao').style.display = 'none';
