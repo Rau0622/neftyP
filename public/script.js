@@ -1,4 +1,4 @@
-const url = 'http://localhost:3000/tarefas';
+const url = '/.netlify/functions/tarefas'; // URL para a função serverless
 
 document.addEventListener("DOMContentLoaded", () => {
     carregarTarefas();
@@ -125,3 +125,4 @@ function editarTarefa(id) {
         alert("Por favor, insira um custo válido.");
     }
 }
+
