@@ -6,7 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function carregarTarefas() {
     fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao carregar tarefas');
+            }
+            return response.json();
+        })
         .then(data => {
             const table = document.getElementById('tarefasTable');
             table.innerHTML = `
@@ -21,7 +26,6 @@ function carregarTarefas() {
                 const row = table.insertRow();
                 row.className = tarefa.custo >= 1000 ? 'highlight' : '';
 
-                // Certifique-se de que 'custo' seja exibido como número válido
                 const custoFormatado = typeof tarefa.custo === 'number' && !isNaN(tarefa.custo)
                     ? tarefa.custo.toFixed(2).replace('.', ',')
                     : 'Valor inválido';
@@ -37,7 +41,10 @@ function carregarTarefas() {
                 `;
             });
         })
-        .catch(error => console.error('Erro ao carregar tarefas:', error));
+        .catch(error => {
+            console.error('Erro ao carregar tarefas:', error);
+            alert('Não foi possível carregar as tarefas. Verifique a conexão com o servidor.');
+        });
 }
 
 function incluirTarefa() {
@@ -54,12 +61,19 @@ function incluirTarefa() {
         })
         .then(response => {
             if (response.ok) {
-                carregarTarefas();
+                return response.json();
             } else {
-                alert("Erro ao incluir a tarefa.");
+                throw new Error('Erro ao incluir a tarefa.');
             }
         })
-        .catch(error => console.error('Erro ao incluir tarefa:', error));
+        .then(() => {
+            alert('Tarefa incluída com sucesso!');
+            carregarTarefas();
+        })
+        .catch(error => {
+            console.error('Erro ao incluir tarefa:', error);
+            alert("Erro ao incluir a tarefa. Verifique os dados e tente novamente.");
+        });
     } else {
         alert("Por favor, insira um custo válido.");
     }
@@ -68,8 +82,18 @@ function incluirTarefa() {
 function excluirTarefa(id) {
     if (confirm("Confirma a exclusão?")) {
         fetch(`${url}/${id}`, { method: 'DELETE' })
-            .then(() => carregarTarefas())
-            .catch(error => console.error('Erro ao excluir tarefa:', error));
+            .then(response => {
+                if (response.ok) {
+                    alert('Tarefa excluída com sucesso!');
+                    carregarTarefas();
+                } else {
+                    throw new Error('Erro ao excluir tarefa');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao excluir tarefa:', error);
+                alert('Erro ao excluir a tarefa. Tente novamente.');
+            });
     }
 }
 
@@ -85,8 +109,18 @@ function editarTarefa(id) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nome, custo, data_limite })
         })
-        .then(() => carregarTarefas())
-        .catch(error => console.error('Erro ao editar tarefa:', error));
+        .then(response => {
+            if (response.ok) {
+                alert('Tarefa editada com sucesso!');
+                carregarTarefas();
+            } else {
+                throw new Error('Erro ao editar tarefa');
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao editar tarefa:', error);
+            alert("Erro ao editar a tarefa. Verifique os dados e tente novamente.");
+        });
     } else {
         alert("Por favor, insira um custo válido.");
     }
