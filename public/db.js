@@ -1,10 +1,11 @@
 const mysql = require('mysql2');
+require('dotenv').config();
 
 const db = mysql.createConnection({
-    host: '127.0.0.1',        // ou o IP do seu servidor MySQL
-    user: 'root',             // seu usuário MySQL
-    password: 'Rau_060203',    // sua senha MySQL
-    database: 'Projeto' // nome do banco de dados que contém a tabela Tarefas
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
 });
 
 db.connect((err) => {
