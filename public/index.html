@@ -102,20 +102,22 @@
         });
 
         function carregarTarefas() {
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) throw new Error('Erro na rede: ' + response.statusText);
-                    return response.json();
-                })
-                .then(data => {
-                    tarefas = data;
-                    atualizarTabela();
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar tarefas:', error);
-                    alert('Não foi possível carregar as tarefas. Verifique a conexão com o servidor.');
-                });
-        }
+    fetch(url)
+        .then(response => {
+            console.log('Status da resposta:', response.status);
+            if (!response.ok) throw new Error('Erro na rede: ' + response.statusText);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Dados carregados:', data); // Inspeciona os dados recebidos
+            tarefas = data;
+            atualizarTabela();
+        })
+        .catch(error => {
+            console.error('Erro ao carregar tarefas:', error);
+            alert('Não foi possível carregar as tarefas. Verifique a conexão com o servidor.');
+        });
+}
 
         function atualizarTabela() {
             const table = document.getElementById('tarefasTable');
