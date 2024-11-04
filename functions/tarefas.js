@@ -54,7 +54,7 @@ exports.handler = async (event) => {
         console.error('Erro:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Erro interno do servidor' }),
+            body: JSON.stringify({ message: 'Erro interno do servidor', error: error.message }),
             headers: { 'Content-Type': 'application/json' }
         };
     }
