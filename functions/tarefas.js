@@ -6,6 +6,7 @@ const pool = mysql.createPool({
     user: 'avnadmin', // seu usuário do banco de dados
     password: 'AVNS_X_Uevo1kC2rrKlN6ECf', // sua senha do banco de dados
     database: 'Projeto' // nome do banco de dados
+    connectTimeout: 10000
 });
 
 // Promisify para facilitar o uso com async/await
