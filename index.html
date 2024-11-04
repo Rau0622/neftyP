@@ -88,6 +88,9 @@
         });
 
         function carregarTarefas() {
+            console.log('Data limite formatada:', dataLimiteFormatada);
+            console.log('Custo:', custo);
+
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
