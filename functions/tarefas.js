@@ -2,7 +2,7 @@ const mysql = require('mysql2');
 const util = require('util');
 
 const pool = mysql.createPool({
-    host: 'your_database_host', // Altere para o host do seu banco de dados na nuvem
+    host: '127.0.0.1', // Altere para o host do seu banco de dados na nuvem
     user: 'root', // seu usuário do banco de dados
     password: 'Rau_060203', // sua senha do banco de dados
     database: 'Projeto' // nome do banco de dados
