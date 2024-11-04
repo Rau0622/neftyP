@@ -1,50 +1,46 @@
 const mysql = require('mysql2');
 const util = require('util');
 
-const connection = mysql.createConnection({
-    host: '127.0.0.1', // ou o host do seu banco de dados
+const pool = mysql.createPool({
+    host: '127.0.0.1', // Altere para o host do seu banco de dados na nuvem
     user: 'root', // seu usuário do banco de dados
     password: 'Rau_060203', // sua senha do banco de dados
     database: 'Projeto' // nome do banco de dados
 });
 
 // Promisify para facilitar o uso com async/await
-connection.query = util.promisify(connection.query);
+pool.query = util.promisify(pool.query);
 
 exports.handler = async (event) => {
     try {
         if (event.httpMethod === 'GET') {
-            // Retorna todas as tarefas
-            const tarefas = await connection.query('SELECT * FROM tarefas');
+            const tarefas = await pool.query('SELECT * FROM tarefas');
             return {
                 statusCode: 200,
                 body: JSON.stringify(tarefas),
                 headers: { 'Content-Type': 'application/json' }
             };
         } else if (event.httpMethod === 'POST') {
-            // Adiciona uma nova tarefa
             const { nome, custo, data_limite } = JSON.parse(event.body);
-            await connection.query('INSERT INTO tarefas (nome, custo, data_limite) VALUES (?, ?, ?)', [nome, custo, data_limite]);
+            await pool.query('INSERT INTO tarefas (nome, custo, data_limite) VALUES (?, ?, ?)', [nome, custo, data_limite]);
             return {
                 statusCode: 201,
                 body: JSON.stringify({ message: 'Tarefa adicionada com sucesso!' }),
                 headers: { 'Content-Type': 'application/json' }
             };
         } else if (event.httpMethod === 'PUT') {
-            // Atualiza uma tarefa existente
             const { id, nome, custo, data_limite } = JSON.parse(event.body);
-            await connection.query('UPDATE tarefas SET nome = ?, custo = ?, data_limite = ? WHERE id = ?', [nome, custo, data_limite, id]);
+            await pool.query('UPDATE tarefas SET nome = ?, custo = ?, data_limite = ? WHERE id = ?', [nome, custo, data_limite, id]);
             return {
                 statusCode: 200,
                 body: JSON.stringify({ message: 'Tarefa atualizada com sucesso!' }),
                 headers: { 'Content-Type': 'application/json' }
             };
         } else if (event.httpMethod === 'DELETE') {
-            // Exclui uma tarefa
-            const id = event.path.split('/').pop(); // Obtém o ID da tarefa a partir da URL
-            await connection.query('DELETE FROM tarefas WHERE id = ?', [id]);
+            const id = event.path.split('/').pop();
+            await pool.query('DELETE FROM tarefas WHERE id = ?', [id]);
             return {
-                statusCode: 204, // No Content
+                statusCode: 204,
                 body: null
             };
         } else {
@@ -61,7 +57,5 @@ exports.handler = async (event) => {
             body: JSON.stringify({ message: 'Erro interno do servidor' }),
             headers: { 'Content-Type': 'application/json' }
         };
-    } finally {
-        connection.end(); // Encerra a conexão
     }
 };
