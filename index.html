@@ -88,25 +88,26 @@
         });
 
         function carregarTarefas() {
-            console.log('Data limite formatada:', dataLimiteFormatada);
-            console.log('Custo:', custo);
+    console.log('Tentando carregar tarefas...');
 
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao carregar tarefas');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    tarefas = data;
-                    atualizarTabela();
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar tarefas:', error);
-                    alert('Não foi possível carregar as tarefas. Verifique a conexão com o servidor.');
-                });
-        }
+    fetch(url)
+        .then(response => {
+            console.log('Resposta do servidor:', response);
+            if (!response.ok) {
+                throw new Error('Erro ao carregar tarefas');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Tarefas carregadas:', data); // Verifique os dados recebidos
+            tarefas = data;
+            atualizarTabela();
+        })
+        .catch(error => {
+            console.error('Erro ao carregar tarefas:', error);
+            alert('Não foi possível carregar as tarefas. Verifique a conexão com o servidor.');
+        });
+}
 
         function atualizarTabela() {
             const table = document.getElementById('tarefasTable');
