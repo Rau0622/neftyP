@@ -1,6 +1,12 @@
 [build]
-  publish = "public"  # Diretório onde seus arquivos estáticos estão localizados
-  command = "npm run build"  # Se você tiver um comando de build definido no package.json
+  publish = "public"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/tarefas/*"
+  to = "http://localhost:3000/tarefas/:splat"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
