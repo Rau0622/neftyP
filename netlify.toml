@@ -2,11 +2,8 @@
   publish = "public"
   command = "npm run build"
 
-[[redirects]]
-  from = "/tarefas/*"
-  to = "http://localhost:3000/tarefas/:splat"
-  status = 200
-  force = true
+[functions]
+  directory = "functions"  # Diretório onde suas funções estão localizadas
 
 [[redirects]]
   from = "/*"
