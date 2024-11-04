@@ -1,11 +1,11 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const util = require('util');
 
 const connection = mysql.createConnection({
-    host: 'localhost', // ou o host do seu banco de dados
-    user: 'seu_usuario', // seu usuário do banco de dados
-    password: 'sua_senha', // sua senha do banco de dados
-    database: 'seu_banco_de_dados' // nome do banco de dados
+    host: '127.0.0.1', // ou o host do seu banco de dados
+    user: 'root', // seu usuário do banco de dados
+    password: 'Rau_060203', // sua senha do banco de dados
+    database: 'tarefas' // nome do banco de dados
 });
 
 // Promisify para facilitar o uso com async/await
