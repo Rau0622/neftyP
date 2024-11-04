@@ -88,7 +88,8 @@
         });
 
         function carregarTarefas() {
-    console.log('Tentando carregar tarefas...');
+        console.log('Tentando carregar tarefas...');
+        document.getElementById('tarefasTable').innerHTML = '<p>Carregando tarefas...</p>';
 
     fetch(url)
         .then(response => {
@@ -99,15 +100,20 @@
             return response.json();
         })
         .then(data => {
-            console.log('Tarefas carregadas:', data); // Verifique os dados recebidos
-            tarefas = data;
-            atualizarTabela();
+            console.log('Tarefas carregadas:', data);
+            if (Array.isArray(data)) {
+                tarefas = data;
+                atualizarTabela();
+            } else {
+                throw new Error('Formato de dados inesperado');
+            }
         })
         .catch(error => {
             console.error('Erro ao carregar tarefas:', error);
-            alert('Não foi possível carregar as tarefas. Verifique a conexão com o servidor.');
+            alert('Não foi possível carregar as tarefas. Erro: ' + error.message);
         });
 }
+
 
         function atualizarTabela() {
             const table = document.getElementById('tarefasTable');
