@@ -1,9 +1,9 @@
 const mysql = require('mysql2/promise');
 
 const db = mysql.createPool({
-    host: 'seu_host',        // IP ou nome do servidor
-    user: 'seu_usuario',     // seu usuário MySQL
-    password: 'sua_senha',   // sua senha MySQL
+    host: '127.0.0.1',        // IP ou nome do servidor
+    user: 'root',     // seu usuário MySQL
+    password: 'Rau_060203',   // sua senha MySQL
     database: 'Projeto',     // nome do banco de dados
     waitForConnections: true,
     connectionLimit: 10,
