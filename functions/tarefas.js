@@ -2,9 +2,9 @@ const mysql = require('mysql2');
 const util = require('util');
 
 const pool = mysql.createPool({
-    host: '127.0.0.1', // Altere para o host do seu banco de dados na nuvem
-    user: 'root', // seu usuário do banco de dados
-    password: 'Rau_060203', // sua senha do banco de dados
+    host: 'mysql-1f2aa24a-rau-2af5.h.aivencloud.com', // Altere para o host do seu banco de dados na nuvem
+    user: 'avnadmin', // seu usuário do banco de dados
+    password: 'AVNS_X_Uevo1kC2rrKlN6ECf', // sua senha do banco de dados
     database: 'Projeto' // nome do banco de dados
 });
 
