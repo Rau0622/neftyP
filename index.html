@@ -70,7 +70,7 @@
             <label for="edit_custo">Custo (R$):</label>
             <input type="text" id="edit_custo" required>
 
-            <label for="edit_data_limite">Data Limite (AAAA-MM-DD):</label>
+            <label for="edit_data_limite">Data Limite (DD/MM/AAAA):</label>
             <input type="text" id="edit_data_limite" required oninput="formatarData(this)">
 
             <button id="btnSalvarEdicao" onclick="salvarEdicao()">Salvar Alterações</button>
@@ -123,13 +123,13 @@
                     <div class="task-cell">Ordem</div>
                     <div class="task-cell">Ações</div>
                 </div>`;
-                
-            tarefas.forEach((tarefa) => {
+
+            tarefas.forEach(tarefa => {
                 const row = document.createElement('div');
                 row.className = 'task-row';
-                
+
                 const custoFormatado = typeof tarefa.custo === 'number' ? tarefa.custo.toFixed(2).replace('.', ',') : 'Valor inválido';
-                const dataLimiteFormatada = new Date(tarefa.data_limite).toLocaleDateString('pt-BR'); // Formato brasileiro de data
+                const dataLimiteFormatada = new Date(tarefa.data_limite).toLocaleDateString('pt-BR');
 
                 row.innerHTML = 
                     `<div class="task-cell">${tarefa.nome}</div>
@@ -197,7 +197,7 @@
             tarefaAtualId = id;
             document.getElementById('edit_nome').value = nome;
             document.getElementById('edit_custo').value = custo.toString().replace('.', ',');
-            document.getElementById('edit_data_limite').value = data_limite;
+            document.getElementById('edit_data_limite').value = new Date(data_limite).toLocaleDateString('pt-BR');
             document.getElementById('formularioEdicao').style.display = 'block';
         }
 
@@ -236,21 +236,13 @@
 
         function converterData(data) {
             const partes = data.split('/');
-            return `${partes[2]}-${partes[1]}-${partes[0]}`; // Formato para YYYY-MM-DD
+            return `${partes[2]}-${partes[1]}-${partes[0]}T00:00:00.000Z`; // Formato ISO 8601
         }
 
         function formatarData(input) {
-            const value = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
-            if (value.length >= 2) {
-                input.value = value.replace(/(\d{2})(\d)/, '$1/$2'); // Adiciona /
-            }
-            if (value.length >= 4) {
-                input.value = value.replace(/(\d{2})(\d{2})(\d)/, '$1/$2/$3'); // Adiciona /
-            }
-            if (value.length > 10) {
-                input.value = input.value.slice(0, 10); // Limita o tamanho
-            }
+            input.value = input.value.replace(/[^0-9/]/g, ''); // Permite apenas números e barras
         }
     </script>
 </body>
 </html>
+
