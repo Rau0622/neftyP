@@ -13,9 +13,6 @@ const pool = mysql.createPool({
 pool.query = util.promisify(pool.query);
 
 exports.handler = async (event) => {
-    console.log('Método HTTP recebido:', event.httpMethod);
-    console.log('Dados recebidos no corpo:', event.body);
-
     try {
         if (event.httpMethod === 'GET') {
             const tarefas = await pool.query('SELECT * FROM Tarefas');
@@ -26,27 +23,19 @@ exports.handler = async (event) => {
             };
         } else if (event.httpMethod === 'POST') {
             const { nome, custo, data_limite } = JSON.parse(event.body);
-            console.log('Dados da nova tarefa:', { nome, custo, data_limite });
+            console.log('Dados recebidos para inclusão:', { nome, custo, data_limite });
 
-            // Verificação básica para garantir que os dados essenciais estão presentes
+            // Adicione validação dos dados aqui, se necessário
             if (!nome || isNaN(custo) || !data_limite) {
-                throw new Error('Dados inválidos: nome, custo ou data_limite ausentes ou incorretos.');
+                throw new Error('Dados inválidos fornecidos');
             }
 
-            // Executa o comando SQL de inserção
-            await pool.query(
-                'INSERT INTO Tarefas (nome, custo, data_limite) VALUES (?, ?, ?)',
-                [nome, custo, data_limite]
-            );
+            await pool.query('INSERT INTO Tarefas (nome, custo, data_limite) VALUES (?, ?, ?)', [nome, custo, data_limite]);
             return {
                 statusCode: 201,
                 body: JSON.stringify({ message: 'Tarefa adicionada com sucesso!' }),
                 headers: { 'Content-Type': 'application/json' }
             };
-        } else if (event.httpMethod === 'PUT') {
-            // Código para atualização
-        } else if (event.httpMethod === 'DELETE') {
-            // Código para exclusão
         } else {
             return {
                 statusCode: 405,
@@ -55,8 +44,7 @@ exports.handler = async (event) => {
             };
         }
     } catch (error) {
-        console.error('Erro ao processar a requisição:', error);
-
+        console.error('Erro no servidor:', error); // Log detalhado do erro
         return {
             statusCode: 500,
             body: JSON.stringify({ message: 'Erro interno do servidor', error: error.message }),
