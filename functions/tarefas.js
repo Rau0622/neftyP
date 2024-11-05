@@ -13,6 +13,7 @@ const pool = mysql.createPool({
 pool.query = util.promisify(pool.query);
 
 exports.handler = async (event) => {
+    console.log("Recebendo requisição:", event);
     try {
         if (event.httpMethod === 'GET') {
             const tarefas = await pool.query('SELECT * FROM Tarefas');
@@ -41,7 +42,7 @@ exports.handler = async (event) => {
             const id = event.path.split('/').pop();
             await pool.query('DELETE FROM Tarefas WHERE id = ?', [id]);
             return {
-                statusCode: 204, // No Content
+                statusCode: 204,
                 body: null
             };
         } else {
