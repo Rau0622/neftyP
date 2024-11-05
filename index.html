@@ -79,72 +79,103 @@
     </div>
 
     <script>
-    const url = '/.netlify/functions/tarefas'; // URL para a função serverless
-    let tarefas = [];
-    let tarefaAtualId = null;
+        const url = '/.netlify/functions/tarefas'; // URL para a função serverless
+        let tarefas = [];
+        let tarefaAtualId = null;
 
-    document.addEventListener("DOMContentLoaded", () => {
-        carregarTarefas();
-    });
+        document.addEventListener("DOMContentLoaded", () => {
+            carregarTarefas();
+        });
 
-    function carregarTarefas() {
-        console.log('Tentando carregar tarefas...');
-        document.getElementById('tarefasTable').innerHTML = '<p>Carregando tarefas...</p>';
+        function carregarTarefas() {
+            console.log('Tentando carregar tarefas...');
+            document.getElementById('tarefasTable').innerHTML = '<p>Carregando tarefas...</p>';
 
-        fetch(url)
-            .then(response => {
-                console.log('Resposta do servidor:', response);
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar tarefas');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Tarefas carregadas:', data);
-                if (Array.isArray(data)) {
-                    tarefas = data;
-                    atualizarTabela();
-                } else {
-                    throw new Error('Formato de dados inesperado');
-                }
-            })
-            .catch(error => {
-                alert('Não foi possível carregar as tarefas. Erro: ' + error.message);
-            });
-    }
-
-    function incluirTarefa() {
-        const nome = document.getElementById('nome').value;
-        const custo = parseFloat(document.getElementById('custo').value.replace(',', '.'));
-        const data_limite = document.getElementById('data_limite').value;
-
-        if (!isNaN(custo) && nome && data_limite) {
-            const dataLimiteFormatada = converterData(data_limite);
-
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
-            })
-            .then(response => {
-                console.log('Resposta ao incluir tarefa:', response);
-                if (!response.ok) {
-                    throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
-                }
-                return response.json(); 
-            })
-            .then(novaTarefa => {
-                document.getElementById('tarefaForm').reset();
-                carregarTarefas(); 
-            })
-            .catch(error => {
-                console.error('Erro ao incluir tarefa:', error);
-                alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
-            });
-        } else {
-            alert("Por favor, insira um custo válido e preencha todos os campos.");
+            fetch(url)
+                .then(response => {
+                    console.log('Resposta do servidor:', response);
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar tarefas');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Tarefas carregadas:', data);
+                    if (Array.isArray(data)) {
+                        tarefas = data;
+                        atualizarTabela();
+                    } else {
+                        throw new Error('Formato de dados inesperado');
+                    }
+                })
+                .catch(error => {
+                    alert('Não foi possível carregar as tarefas. Erro: ' + error.message);
+                });
         }
-    }
+
+        function atualizarTabela() {
+            const table = document.getElementById('tarefasTable');
+            table.innerHTML = 
+                `<div class="task-row header-row">
+                    <div class="task-cell">Nome da Tarefa</div>
+                    <div class="task-cell">Custo (R$)</div>
+                    <div class="task-cell">Data Limite</div>
+                    <div class="task-cell">Ordem</div>
+                    <div class="task-cell">Ações</div>
+                </div>`;
+                
+            tarefas.forEach((tarefa) => {
+                const row = document.createElement('div');
+                row.className = 'task-row';
+                
+                const custoFormatado = typeof tarefa.custo === 'number' ? tarefa.custo.toFixed(2).replace('.', ',') : 'Valor inválido';
+                const dataLimiteFormatada = new Date(tarefa.data_limite).toLocaleDateString('pt-BR'); // Formato brasileiro de data
+
+                row.innerHTML = 
+                    `<div class="task-cell">${tarefa.nome}</div>
+                    <div class="task-cell">${custoFormatado}</div>
+                    <div class="task-cell">${dataLimiteFormatada}</div>
+                    <div class="task-cell">${tarefa.ordem}</div>
+                    <div class="task-cell task-actions">
+                        <button onclick="editarTarefa(${tarefa.id}, '${tarefa.nome}', ${tarefa.custo}, '${tarefa.data_limite}')">Editar</button>
+                        <button onclick="excluirTarefa(${tarefa.id})">Excluir</button>
+                    </div>`;
+                
+                table.appendChild(row);
+            });
+        }
+
+        function incluirTarefa() {
+            const nome = document.getElementById('nome').value;
+            const custo = parseFloat(document.getElementById('custo').value.replace(',', '.'));
+            const data_limite = document.getElementById('data_limite').value;
+
+            if (!isNaN(custo) && nome && data_limite) {
+                const dataLimiteFormatada = converterData(data_limite);
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
+                    }
+                    return response.json(); 
+                })
+                .then(novaTarefa => {
+                    document.getElementById('tarefaForm').reset();
+                    carregarTarefas(); 
+                })
+                .catch(error => {
+                    console.error('Erro ao incluir tarefa:', error);
+                    alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
+                });
+            } else {
+                alert("Por favor, insira um custo válido e preencha todos os campos.");
+            }
+        }
 
         function excluirTarefa(id) {
             if (confirm("Você tem certeza que deseja excluir esta tarefa?")) {
@@ -205,15 +236,19 @@
 
         function converterData(data) {
             const partes = data.split('/');
-            return `${partes[2]}-${partes[1]}-${partes[0]}`; // Converte de DD/MM/AAAA para AAAA-MM-DD
+            return `${partes[2]}-${partes[1]}-${partes[0]}`; // Formato para YYYY-MM-DD
         }
 
         function formatarData(input) {
-            const data = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
-            if (data.length >= 2 && data.length <= 4) {
-                input.value = `${data.slice(0, 2)}/${data.slice(2)}`;
-            } else if (data.length >= 4) {
-                input.value = `${data.slice(0, 2)}/${data.slice(2, 4)}/${data.slice(4)}`;
+            const value = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+            if (value.length >= 2) {
+                input.value = value.replace(/(\d{2})(\d)/, '$1/$2'); // Adiciona /
+            }
+            if (value.length >= 4) {
+                input.value = value.replace(/(\d{2})(\d{2})(\d)/, '$1/$2/$3'); // Adiciona /
+            }
+            if (value.length > 10) {
+                input.value = input.value.slice(0, 10); // Limita o tamanho
             }
         }
     </script>
