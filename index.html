@@ -87,31 +87,27 @@
             carregarTarefas();
         });
 
-        function carregarTarefas() {
-            console.log('Tentando carregar tarefas...');
-            document.getElementById('tarefasTable').innerHTML = '<p>Carregando tarefas...</p>';
+       function carregarTarefas() {
+    fetch(url)
+        .then(response => {
+            console.log('Resposta completa do backend:', response);
+            return response.json(); // Tenta parsear o JSON da resposta
+        })
+        .then(data => {
+            console.log('Dados recebidos:', data); // Exibe os dados recebidos
+            if (Array.isArray(data)) {
+                tarefas = data;
+                atualizarTabela(); // Chama a função que atualiza a tabela na interface
+            } else {
+                throw new Error('Formato de dados inesperado');
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar tarefas:', error);
+            alert('Não foi possível carregar as tarefas. Erro: ' + error.message);
+        });
+}
 
-            fetch(url)
-                .then(response => {
-                    console.log('Resposta do servidor:', response);
-                    if (!response.ok) {
-                        throw new Error('Erro ao carregar tarefas');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Tarefas carregadas:', data);
-                    if (Array.isArray(data)) {
-                        tarefas = data;
-                        atualizarTabela();
-                    } else {
-                        throw new Error('Formato de dados inesperado');
-                    }
-                })
-                .catch(error => {
-                    alert('Não foi possível carregar as tarefas. Erro: ' + error.message);
-                });
-        }
 
         function atualizarTabela() {
     const table = document.getElementById('tarefasTable');
