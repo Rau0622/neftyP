@@ -2,10 +2,10 @@ const mysql = require('mysql2');
 const util = require('util');
 
 const pool = mysql.createPool({
-    host: process.env.DB_HOST, // Variável de ambiente do host do banco de dados
-    user: process.env.DB_USER, // Variável de ambiente do usuário
-    password: process.env.DB_PASSWORD, // Variável de ambiente da senha
-    database: process.env.DB_NAME, // Variável de ambiente do nome do banco de dados
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     connectTimeout: 10000
 });
 
@@ -24,10 +24,8 @@ exports.handler = async (event) => {
         } else if (event.httpMethod === 'POST') {
             try {
                 const { nome, custo, data_limite } = JSON.parse(event.body);
-                
-                // Log detalhado para depuração
-                console.log("Tentando adicionar tarefa:", { nome, custo, data_limite });
 
+                // Validações adicionais
                 if (!nome || typeof custo !== 'number' || !data_limite) {
                     throw new Error("Dados inválidos: Verifique se todos os campos estão preenchidos corretamente.");
                 }
