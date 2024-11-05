@@ -79,103 +79,72 @@
     </div>
 
     <script>
-        const url = '/.netlify/functions/tarefas'; // URL para a função serverless
-        let tarefas = [];
-        let tarefaAtualId = null;
+    const url = '/.netlify/functions/tarefas'; // URL para a função serverless
+    let tarefas = [];
+    let tarefaAtualId = null;
 
-        document.addEventListener("DOMContentLoaded", () => {
-            carregarTarefas();
-        });
+    document.addEventListener("DOMContentLoaded", () => {
+        carregarTarefas();
+    });
 
-        function carregarTarefas() {
+    function carregarTarefas() {
         console.log('Tentando carregar tarefas...');
         document.getElementById('tarefasTable').innerHTML = '<p>Carregando tarefas...</p>';
 
-    fetch(url)
-        .then(response => {
-            console.log('Resposta do servidor:', response);
-            if (!response.ok) {
-                throw new Error('Erro ao carregar tarefas');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Tarefas carregadas:', data);
-            if (Array.isArray(data)) {
-                tarefas = data;
-                atualizarTabela();
-            } else {
-                throw new Error('Formato de dados inesperado');
-            }
-        })
-        .catch(error => {
-            alert('Não foi possível carregar as tarefas. Erro: ' + error.message);
-        });
-}
-
-
-        function atualizarTabela() {
-            const table = document.getElementById('tarefasTable');
-            table.innerHTML = 
-                `<div class="task-row header-row">
-                    <div class="task-cell">Nome da Tarefa</div>
-                    <div class="task-cell">Custo (R$)</div>
-                    <div class="task-cell">Data Limite</div>
-                    <div class="task-cell">Ações</div>
-                </div>`;
-                
-            tarefas.forEach((tarefa, index) => {
-                const row = document.createElement('div');
-                row.className = 'task-row';
-                const custoFormatado = typeof tarefa.custo === 'number' ? tarefa.custo.toFixed(2).replace('.', ',') : 'Valor inválido';
-                
-                if (tarefa.custo >= 1000) {
-                    row.classList.add('destaque');
+        fetch(url)
+            .then(response => {
+                console.log('Resposta do servidor:', response);
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar tarefas');
                 }
-
-                row.innerHTML = 
-                    `<div class="task-cell">${tarefa.nome}</div>
-                    <div class="task-cell">${custoFormatado}</div>
-                    <div class="task-cell">${new Date(tarefa.data_limite).toLocaleDateString()}</div>
-                    <div class="task-cell task-actions">
-                        <button onclick="editarTarefa(${tarefa.id}, '${tarefa.nome}', ${tarefa.custo}, '${tarefa.data_limite}')">Editar</button>
-                        <button onclick="excluirTarefa(${tarefa.id})">Excluir</button>
-                    </div>`;
-                table.appendChild(row);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Tarefas carregadas:', data);
+                if (Array.isArray(data)) {
+                    tarefas = data;
+                    atualizarTabela();
+                } else {
+                    throw new Error('Formato de dados inesperado');
+                }
+            })
+            .catch(error => {
+                alert('Não foi possível carregar as tarefas. Erro: ' + error.message);
             });
+    }
+
+    function incluirTarefa() {
+        const nome = document.getElementById('nome').value;
+        const custo = parseFloat(document.getElementById('custo').value.replace(',', '.'));
+        const data_limite = document.getElementById('data_limite').value;
+
+        if (!isNaN(custo) && nome && data_limite) {
+            const dataLimiteFormatada = converterData(data_limite);
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
+            })
+            .then(response => {
+                console.log('Resposta ao incluir tarefa:', response);
+                if (!response.ok) {
+                    throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
+                }
+                return response.json(); 
+            })
+            .then(novaTarefa => {
+                document.getElementById('tarefaForm').reset();
+                carregarTarefas(); 
+            })
+            .catch(error => {
+                console.error('Erro ao incluir tarefa:', error);
+                alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
+            });
+        } else {
+            alert("Por favor, insira um custo válido e preencha todos os campos.");
         }
-
-        function incluirTarefa() {
-            const nome = document.getElementById('nome').value;
-            const custo = parseFloat(document.getElementById('custo').value.replace(',', '.'));
-            const data_limite = document.getElementById('data_limite').value;
-
-            if (!isNaN(custo) && nome && data_limite) {
-                const dataLimiteFormatada = converterData(data_limite);
-
-                fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
-                    }
-                    return response.json(); 
-                })
-                .then(novaTarefa => {
-                    document.getElementById('tarefaForm').reset();
-                    carregarTarefas(); 
-                })
-                .catch(error => {
-                    console.error('Erro ao incluir tarefa:', error);
-                    alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
-                });
-            } else {
-                alert("Por favor, insira um custo válido e preencha todos os campos.");
-            }
-        }
+    }
 
         function excluirTarefa(id) {
             if (confirm("Você tem certeza que deseja excluir esta tarefa?")) {
