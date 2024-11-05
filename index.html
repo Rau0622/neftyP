@@ -148,8 +148,16 @@
     const custo = parseFloat(document.getElementById('custo').value.replace(',', '.'));
     const data_limite = document.getElementById('data_limite').value;
 
+    // Verifica se todos os campos estão preenchidos
     if (!nome || isNaN(custo) || !data_limite) {
         alert("Por favor, insira um custo válido e preencha todos os campos.");
+        return;
+    }
+
+    // Verifica se a data é válida
+    const dataValida = Date.parse(data_limite);
+    if (isNaN(dataValida)) {
+        alert("Por favor, insira uma data válida.");
         return;
     }
 
@@ -161,23 +169,27 @@
         body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
     })
     .then(response => {
-        console.log("Resposta completa do backend:", response);  // Log da resposta completa para inspecionar
+        console.log("Resposta completa do backend:", response);  // Log da resposta completa para inspecionar 
         if (!response.ok) {
+            // Verifica se há uma mensagem de erro no corpo da resposta
             return response.json().then(errorData => {
                 throw new Error(errorData.message || 'Erro ao incluir a tarefa');
             });
         }
-        return response.json();
+        return response.json(); // Parseia a resposta como JSON
     })
-    .then(novaTarefa => {
-        console.log("Tarefa adicionada com sucesso:", novaTarefa);
-        document.getElementById('tarefaForm').reset();
-        carregarTarefas();
+    .then(data => {
+        console.log('Tarefa incluída com sucesso:', data);
+        alert('Tarefa incluída com sucesso!'); // Mensagem de sucesso
+        // Atualizar a tabela ou a lista de tarefas
+        carregarTarefas(); // Chame a função que carrega as tarefas novamente
     })
     .catch(error => {
-        alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
+        console.error('Erro ao incluir tarefa:', error);
+        alert('Erro ao incluir tarefa. Verifique os dados e tente novamente. Erro: ' + error.message);
     });
 }
+
 
         function editarTarefa(id, nome, custo, data_limite) {
             tarefaAtualId = id;
