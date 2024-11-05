@@ -162,12 +162,14 @@
         body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
     })
     .then(response => {
+        console.log("Resposta da inclusão:", response);  // Log da resposta completa
         if (!response.ok) {
             throw new Error('Erro ao incluir a tarefa: ' + response.statusText);
         }
         return response.json();
     })
     .then(novaTarefa => {
+        console.log("Tarefa adicionada:", novaTarefa);
         document.getElementById('tarefaForm').reset();
         carregarTarefas();
     })
@@ -176,6 +178,7 @@
         alert('Erro ao incluir tarefa. Verifique os dados e tente novamente.');
     });
 }
+
 
 
         function editarTarefa(id, nome, custo, data_limite) {
