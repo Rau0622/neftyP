@@ -2,10 +2,10 @@ const mysql = require('mysql2');
 const util = require('util');
 
 const pool = mysql.createPool({
-    host: process.env.DB_HOST, // Altere para a variável de ambiente do host do banco de dados
-    user: process.env.DB_USER, // variável de ambiente do usuário
-    password: process.env.DB_PASSWORD, // variável de ambiente da senha
-    database: process.env.DB_NAME, // variável de ambiente do nome do banco de dados
+    host: process.env.DB_HOST, // Variável de ambiente do host do banco de dados
+    user: process.env.DB_USER, // Variável de ambiente do usuário
+    password: process.env.DB_PASSWORD, // Variável de ambiente da senha
+    database: process.env.DB_NAME, // Variável de ambiente do nome do banco de dados
     connectTimeout: 10000
 });
 
@@ -13,7 +13,6 @@ const pool = mysql.createPool({
 pool.query = util.promisify(pool.query);
 
 exports.handler = async (event) => {
-    console.log("Recebendo requisição:", event);
     try {
         if (event.httpMethod === 'GET') {
             const tarefas = await pool.query('SELECT * FROM Tarefas');
@@ -23,16 +22,40 @@ exports.handler = async (event) => {
                 headers: { 'Content-Type': 'application/json' }
             };
         } else if (event.httpMethod === 'POST') {
-            const { nome, custo, data_limite } = JSON.parse(event.body);
-            await pool.query('INSERT INTO Tarefas (nome, custo, data_limite) VALUES (?, ?, ?)', [nome, custo, data_limite]);
-            return {
-                statusCode: 201,
-                body: JSON.stringify({ message: 'Tarefa adicionada com sucesso!' }),
-                headers: { 'Content-Type': 'application/json' }
-            };
+            try {
+                const { nome, custo, data_limite } = JSON.parse(event.body);
+                
+                // Log detalhado para depuração
+                console.log("Tentando adicionar tarefa:", { nome, custo, data_limite });
+
+                if (!nome || typeof custo !== 'number' || !data_limite) {
+                    throw new Error("Dados inválidos: Verifique se todos os campos estão preenchidos corretamente.");
+                }
+
+                await pool.query(
+                    'INSERT INTO Tarefas (nome, custo, data_limite) VALUES (?, ?, ?)',
+                    [nome, custo, data_limite]
+                );
+
+                return {
+                    statusCode: 201,
+                    body: JSON.stringify({ message: 'Tarefa adicionada com sucesso!' }),
+                    headers: { 'Content-Type': 'application/json' }
+                };
+            } catch (error) {
+                console.error('Erro ao incluir tarefa:', error);
+                return {
+                    statusCode: 500,
+                    body: JSON.stringify({ message: 'Erro ao incluir tarefa', error: error.message }),
+                    headers: { 'Content-Type': 'application/json' }
+                };
+            }
         } else if (event.httpMethod === 'PUT') {
             const { id, nome, custo, data_limite } = JSON.parse(event.body);
-            await pool.query('UPDATE Tarefas SET nome = ?, custo = ?, data_limite = ? WHERE id = ?', [nome, custo, data_limite, id]);
+            await pool.query(
+                'UPDATE Tarefas SET nome = ?, custo = ?, data_limite = ? WHERE id = ?',
+                [nome, custo, data_limite, id]
+            );
             return {
                 statusCode: 200,
                 body: JSON.stringify({ message: 'Tarefa atualizada com sucesso!' }),
