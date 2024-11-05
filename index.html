@@ -148,45 +148,44 @@
     const custo = parseFloat(document.getElementById('custo').value.replace(',', '.'));
     const data_limite = document.getElementById('data_limite').value;
 
-    // Verifica se todos os campos estão preenchidos
     if (!nome || isNaN(custo) || !data_limite) {
         alert("Por favor, insira um custo válido e preencha todos os campos.");
         return;
     }
 
-    // Verifica se a data é válida
-    const dataValida = Date.parse(data_limite);
-    if (isNaN(dataValida)) {
-        alert("Por favor, insira uma data válida.");
-        return;
-    }
+    // Obter o próximo valor de ordem
+    fetch('/.netlify/functions/tarefas/ordem') // Supondo que você tenha um endpoint que retorne o próximo valor de ordem
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao buscar próximo valor de ordem');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const ordem = data.proximo_ordem; // Use o valor retornado para ordem
+            const dataLimiteFormatada = converterData(data_limite);
 
-    const dataLimiteFormatada = converterData(data_limite);
-
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
-    })
-    .then(response => {
-        console.log("Resposta completa do backend:", response);  // Log da resposta completa para inspecionar 
-        if (!response.ok) {
-            // Verifica se há uma mensagem de erro no corpo da resposta
-            return response.json().then(errorData => {
-                throw new Error(errorData.message || 'Erro ao incluir a tarefa');
+            return fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada, ordem })
             });
-        }
-        return response.json(); // Parseia a resposta como JSON
-    })
-    .then(data => {
-        console.log('Tarefa incluída com sucesso:', data);
-        alert('Tarefa incluída com sucesso!'); // Mensagem de sucesso
-        // Atualizar a tabela ou a lista de tarefas
-        carregarTarefas(); // Chame a função que carrega as tarefas novamente
-    })
-    .catch(error => {
-        alert('Erro ao incluir tarefa. Verifique os dados e tente novamente. Erro: ' + error.message);
-    });
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'Erro ao incluir a tarefa');
+                });
+            }
+            return response.json(); // Parseia a resposta
+        })
+        .then(data => {
+            console.log('Tarefa incluída com sucesso:', data);
+            // Atualizar a tabela ou realizar outras ações necessárias
+        })
+        .catch(error => {
+            alert('Erro ao incluir tarefa. Verifique os dados e tente novamente. Erro: ' + error.message);
+        });
 }
 
 
