@@ -25,10 +25,12 @@ exports.handler = async (event) => {
             try {
                 const { nome, custo, data_limite } = JSON.parse(event.body);
 
-                // Validações adicionais
+                // Validações adicionais de dados
                 if (!nome || typeof custo !== 'number' || !data_limite) {
                     throw new Error("Dados inválidos: Verifique se todos os campos estão preenchidos corretamente.");
                 }
+
+                console.log("Dados recebidos para inclusão:", { nome, custo, data_limite });
 
                 await pool.query(
                     'INSERT INTO Tarefas (nome, custo, data_limite) VALUES (?, ?, ?)',
@@ -74,7 +76,7 @@ exports.handler = async (event) => {
             };
         }
     } catch (error) {
-        console.error('Erro:', error);
+        console.error('Erro geral:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ message: 'Erro interno do servidor', error: error.message }),
