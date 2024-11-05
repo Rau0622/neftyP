@@ -13,6 +13,9 @@ const pool = mysql.createPool({
 pool.query = util.promisify(pool.query);
 
 exports.handler = async (event) => {
+    console.log('Método HTTP recebido:', event.httpMethod);
+    console.log('Dados recebidos no corpo:', event.body);
+
     try {
         if (event.httpMethod === 'GET') {
             const tarefas = await pool.query('SELECT * FROM Tarefas');
@@ -22,55 +25,28 @@ exports.handler = async (event) => {
                 headers: { 'Content-Type': 'application/json' }
             };
         } else if (event.httpMethod === 'POST') {
-            try {
-                console.log("Dados recebidos no evento POST:", event.body);
+            const { nome, custo, data_limite } = JSON.parse(event.body);
+            console.log('Dados da nova tarefa:', { nome, custo, data_limite });
 
-                const { nome, custo, data_limite } = JSON.parse(event.body);
-
-                // Verificação detalhada dos valores recebidos
-                console.log("Dados processados para inclusão:", { nome, custo, data_limite });
-
-                // Validar se os dados são válidos
-                if (!nome || typeof custo !== 'number' || !data_limite) {
-                    throw new Error("Dados inválidos: Verifique se todos os campos estão preenchidos corretamente.");
-                }
-
-                await pool.query(
-                    'INSERT INTO Tarefas (nome, custo, data_limite) VALUES (?, ?, ?)',
-                    [nome, custo, data_limite]
-                );
-
-                return {
-                    statusCode: 201,
-                    body: JSON.stringify({ message: 'Tarefa adicionada com sucesso!' }),
-                    headers: { 'Content-Type': 'application/json' }
-                };
-            } catch (error) {
-                console.error('Erro ao processar requisição POST:', error);
-                return {
-                    statusCode: 500,
-                    body: JSON.stringify({ message: 'Erro ao incluir tarefa', error: error.message }),
-                    headers: { 'Content-Type': 'application/json' }
-                };
+            // Verificação básica para garantir que os dados essenciais estão presentes
+            if (!nome || isNaN(custo) || !data_limite) {
+                throw new Error('Dados inválidos: nome, custo ou data_limite ausentes ou incorretos.');
             }
-        } else if (event.httpMethod === 'PUT') {
-            const { id, nome, custo, data_limite } = JSON.parse(event.body);
+
+            // Executa o comando SQL de inserção
             await pool.query(
-                'UPDATE Tarefas SET nome = ?, custo = ?, data_limite = ? WHERE id = ?',
-                [nome, custo, data_limite, id]
+                'INSERT INTO Tarefas (nome, custo, data_limite) VALUES (?, ?, ?)',
+                [nome, custo, data_limite]
             );
             return {
-                statusCode: 200,
-                body: JSON.stringify({ message: 'Tarefa atualizada com sucesso!' }),
+                statusCode: 201,
+                body: JSON.stringify({ message: 'Tarefa adicionada com sucesso!' }),
                 headers: { 'Content-Type': 'application/json' }
             };
+        } else if (event.httpMethod === 'PUT') {
+            // Código para atualização
         } else if (event.httpMethod === 'DELETE') {
-            const id = event.path.split('/').pop();
-            await pool.query('DELETE FROM Tarefas WHERE id = ?', [id]);
-            return {
-                statusCode: 204,
-                body: null
-            };
+            // Código para exclusão
         } else {
             return {
                 statusCode: 405,
@@ -79,7 +55,8 @@ exports.handler = async (event) => {
             };
         }
     } catch (error) {
-        console.error('Erro geral:', error);
+        console.error('Erro ao processar a requisição:', error);
+
         return {
             statusCode: 500,
             body: JSON.stringify({ message: 'Erro interno do servidor', error: error.message }),
