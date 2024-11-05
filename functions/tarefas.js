@@ -23,14 +23,17 @@ exports.handler = async (event) => {
             };
         } else if (event.httpMethod === 'POST') {
             try {
+                console.log("Dados recebidos no evento POST:", event.body);
+
                 const { nome, custo, data_limite } = JSON.parse(event.body);
 
-                // Validações adicionais de dados
+                // Verificação detalhada dos valores recebidos
+                console.log("Dados processados para inclusão:", { nome, custo, data_limite });
+
+                // Validar se os dados são válidos
                 if (!nome || typeof custo !== 'number' || !data_limite) {
                     throw new Error("Dados inválidos: Verifique se todos os campos estão preenchidos corretamente.");
                 }
-
-                console.log("Dados recebidos para inclusão:", { nome, custo, data_limite });
 
                 await pool.query(
                     'INSERT INTO Tarefas (nome, custo, data_limite) VALUES (?, ?, ?)',
@@ -43,7 +46,7 @@ exports.handler = async (event) => {
                     headers: { 'Content-Type': 'application/json' }
                 };
             } catch (error) {
-                console.error('Erro ao incluir tarefa:', error);
+                console.error('Erro ao processar requisição POST:', error);
                 return {
                     statusCode: 500,
                     body: JSON.stringify({ message: 'Erro ao incluir tarefa', error: error.message }),
