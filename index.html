@@ -153,39 +153,29 @@
         return;
     }
 
-    // Obter o próximo valor de ordem
-    fetch('/.netlify/functions/tarefas/ordem') // Supondo que você tenha um endpoint que retorne o próximo valor de ordem
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erro ao buscar próximo valor de ordem');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const ordem = data.proximo_ordem; // Use o valor retornado para ordem
-            const dataLimiteFormatada = converterData(data_limite);
+    const dataLimiteFormatada = converterData(data_limite);
 
-            return fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada, ordem })
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, custo, data_limite: dataLimiteFormatada })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || 'Erro ao incluir a tarefa');
             });
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(errorData => {
-                    throw new Error(errorData.message || 'Erro ao incluir a tarefa');
-                });
-            }
-            return response.json(); // Parseia a resposta
-        })
-        .then(data => {
-            console.log('Tarefa incluída com sucesso:', data);
-            // Atualizar a tabela ou realizar outras ações necessárias
-        })
-        .catch(error => {
-            alert('Erro ao incluir tarefa. Verifique os dados e tente novamente. Erro: ' + error.message);
-        });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Tarefa adicionada com sucesso:", data);
+        carregarTarefas(); // Atualiza a lista de tarefas
+    })
+    .catch(error => {
+        console.error('Erro ao incluir tarefa:', error);
+        alert('Erro ao incluir tarefa. Verifique os dados e tente novamente. Erro: ' + error.message);
+    });
 }
 
 
