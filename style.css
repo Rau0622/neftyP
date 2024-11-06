@@ -239,3 +239,7 @@ button:hover {
     opacity: 0.5;
     border: 2px dashed #ffdd57;
 }
+.high-cost {
+    color: yellow;
+    font-weight: bold;
+}
