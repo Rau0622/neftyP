@@ -111,35 +111,70 @@
 
         function atualizarTabela() {
     const table = document.getElementById('tarefasTable');
-    table.innerHTML = 
-        `<div class="task-row header-row">
+    table.innerHTML = `
+        <div class="task-row header-row">
             <div class="task-cell">Nome da Tarefa</div>
             <div class="task-cell">Custo (R$)</div>
             <div class="task-cell">Data Limite</div>
             <div class="task-cell">Ações</div>
         </div>`;
-        
-    tarefas.forEach(tarefa => {
+    
+    tarefas.forEach((tarefa, index) => {
         const row = document.createElement('div');
         row.className = 'task-row';
+        row.draggable = true;
+        row.dataset.index = index; // Adiciona o índice como dado da tarefa
 
-        const custoFormatado = typeof tarefa.custo === 'number' 
-            ? tarefa.custo.toFixed(2).replace('.', ',') 
-            : 'Valor inválido';
+        // Evento para o início do "drag-and-drop"
+        row.addEventListener('dragstart', (e) => {
+            row.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', index); // Salva o índice da tarefa
+        });
 
-        if (tarefa.custo >= 1000) {
-            row.classList.add('destaque');
-        }
+        // Remove o destaque quando a tarefa é solta
+        row.addEventListener('dragend', () => {
+            row.classList.remove('dragging');
+        });
 
-        row.innerHTML = 
-            `<div class="task-cell">${tarefa.nome || 'Sem nome'}</div>
+        // Destaca a tarefa na posição correta ao arrastar
+        row.addEventListener('dragover', (e) => e.preventDefault());
+
+        row.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const draggedIndex = e.dataTransfer.getData('text/plain');
+            const targetIndex = row.dataset.index;
+
+            // Reordena tarefas e atualiza a tabela
+            reordenarTarefas(draggedIndex, targetIndex);
+            atualizarTabela();
+        });
+
+        const custoFormatado = typeof tarefa.custo === 'number' ? tarefa.custo.toFixed(2).replace('.', ',') : 'Valor inválido';
+        row.innerHTML = `
+            <div class="task-cell">${tarefa.nome}</div>
             <div class="task-cell">${custoFormatado}</div>
             <div class="task-cell">${new Date(tarefa.data_limite).toLocaleDateString()}</div>
             <div class="task-cell task-actions">
                 <button onclick="editarTarefa(${tarefa.id}, '${tarefa.nome}', ${tarefa.custo}, '${tarefa.data_limite}')">Editar</button>
                 <button onclick="excluirTarefa(${tarefa.id})">Excluir</button>
             </div>`;
+        
         table.appendChild(row);
+    });
+}
+
+// Função para reordenar tarefas no array e atualizar o backend
+function reordenarTarefas(fromIndex, toIndex) {
+    const tarefa = tarefas.splice(fromIndex, 1)[0];
+    tarefas.splice(toIndex, 0, tarefa);
+
+    // Atualizar a ordem no backend após rearranjar localmente
+    tarefas.forEach((tarefa, index) => {
+        fetch('/.netlify/functions/tarefas/ordem', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: tarefa.id, ordem: index + 1 })
+        }).catch(error => console.error('Erro ao atualizar ordem:', error));
     });
 }
 
