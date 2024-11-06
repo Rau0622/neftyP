@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <style>
         .container {
             padding: 20px;
-            max-width: 800px; 
+            max-width: 800px;
             margin: auto;
         }
 
@@ -28,7 +28,7 @@
         }
 
         .task-cell.task-actions {
-            display: flex; 
+            display: flex;
             gap: 5px;
         }
 
@@ -37,12 +37,8 @@
             cursor: pointer;
         }
 
-        .destaque {
-            background-color: goldenrod;
-        }
-
-        /* Estilo para o preço maior que ou igual a 1000 */
-        .high-cost {
+        /* Estilo para o fundo amarelo nas linhas com custo alto */
+        .high-cost-row {
             background-color: yellow;
         }
     </style>
@@ -163,9 +159,9 @@
                         <button onclick="excluirTarefa(${tarefa.id})">Excluir</button>
                     </div>`;
 
-                // Aplica a classe de alto custo
+                // Aplica a classe de fundo amarelo para linhas com custo maior ou igual a 1000
                 if (tarefa.custo >= 1000) {
-                    row.querySelector('.task-cell.custo').classList.add('high-cost');
+                    row.classList.add('high-cost-row');
                 }
 
                 table.appendChild(row);
@@ -291,4 +287,3 @@
     </script>
 </body>
 </html>
-
