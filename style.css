@@ -235,3 +235,7 @@ button:hover {
 .scroll-down {
     bottom: 10px; /* Posiciona o botão de descer */
 }
+.dragging {
+    opacity: 0.5;
+    border: 2px dashed #ffdd57;
+}
