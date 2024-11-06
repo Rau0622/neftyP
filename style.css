@@ -164,11 +164,7 @@ button:hover {
 /* Alinha os botões lado a lado */
 #formularioEdicao button:nth-child(4) {
     margin-left: 4%; /* Espaço entre os botões */
-}
-
-.high-cost {
-    background-color: red; /* Destaque para tarefas com custo alto */
-}
+    
 .container {
     width: 90%;
     max-width: 500px;
@@ -240,6 +236,6 @@ button:hover {
     border: 2px dashed #ffdd57;
 }
 .high-cost {
-    color: yellow;
+    color: goldenrod;
     font-weight: bold;
 }
