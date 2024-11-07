@@ -9,7 +9,6 @@ const pool = mysql.createPool({
     connectTimeout: 10000
 });
 
-// Promisify para facilitar o uso com async/await
 pool.query = util.promisify(pool.query);
 
 exports.handler = async (event) => {
