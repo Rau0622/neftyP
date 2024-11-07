@@ -3,7 +3,7 @@
   command = "npm run build"
 
 [functions]
-  directory = "functions"  # Diretório onde suas funções estão localizadas
+  directory = "functions"
 
 [[redirects]]
   from = "/*"
