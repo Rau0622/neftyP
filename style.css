@@ -36,8 +36,8 @@ h1 {
 form {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Espaçamento entre os campos do formulário */
-    margin-bottom: 20px; /* Espaçamento entre o formulário e a tabela */
+    gap: 10px; 
+    margin-bottom: 20px;
 }
 
 input {
@@ -104,7 +104,7 @@ button:hover {
     background-color: #ff4500;
 }
 
-/* Custom scrollbar */
+
 .container::-webkit-scrollbar {
     width: 8px;
 }
@@ -119,33 +119,33 @@ button:hover {
 }
 
 #formularioEdicao {
-    display: none; /* Escondido por padrão */
+    display: none;
     background: #444;
-    padding: 20px; /* Aumenta o espaçamento interno */
+    padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    margin-top: 20px; /* Espaço acima do formulário */
+    margin-top: 20px;
 }
 
 #formularioEdicao label {
-    margin-bottom: 5px; /* Espaço entre o rótulo e o campo de entrada */
-    font-weight: bold; /* Destaca os rótulos */
-    display: block; /* Faz os rótulos ocuparem a linha inteira */
+    margin-bottom: 5px;
+    font-weight: bold;
+    display: block;
 }
 
 #formularioEdicao input {
-    padding: 10px; /* Espaçamento interno dos campos */
+    padding: 10px;
     border: 1px solid #555;
     border-radius: 5px;
     background: #444;
     color: #f5f5f5;
-    margin-bottom: 15px; /* Espaço entre os campos */
-    width: 100%; /* Faz com que os campos ocupem toda a largura do formulário */
-    box-sizing: border-box; /* Inclui padding e border no cálculo da largura */
+    margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #formularioEdicao button {
-    margin-top: 10px; /* Espaço acima dos botões */
+    margin-top: 10px;
     background-color: #ff6347;
     color: #fff;
     border: none;
@@ -154,16 +154,16 @@ button:hover {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
-    width: 48%; /* Largura de cada botão */
+    width: 48%;
 }
 
 #formularioEdicao button:hover {
     background-color: #ff4500;
 }
 
-/* Alinha os botões lado a lado */
+
 #formularioEdicao button:nth-child(4) {
-    margin-left: 4%; /* Espaço entre os botões */
+    margin-left: 4%;
     
 .container {
     width: 90%;
@@ -173,9 +173,9 @@ button:hover {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
-    overflow-y: auto; /* Certifique-se de que a rolagem vertical esteja ativa */
+    overflow-y: auto;
     position: relative;
-    padding-bottom: 50px; /* Adicionado espaço inferior para os botões */
+    padding-bottom: 50px;
 }
 
 #tarefasTable {
