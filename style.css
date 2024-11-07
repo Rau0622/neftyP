@@ -181,8 +181,8 @@ button:hover {
 #tarefasTable {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Espaçamento entre as linhas da tabela */
-    padding-bottom: 40px; /* Para não cortar os botões de rolagem */
+    gap: 8px;
+    padding-bottom: 40px;
 }
 
 .task-row {
@@ -190,46 +190,30 @@ button:hover {
     border: 1px solid #555;
     border-radius: 5px;
     overflow: hidden;
-    padding: 10px; /* Aumentado o padding nas linhas da tabela */
+    padding: 10px;
 }
 
 .task-actions {
     display: flex;
     justify-content: space-evenly;
-    width: 100%; /* Garante que as ações ocupem todo o espaço */
+    width: 100%;
 }
 
 .task-actions button {
-    margin-right: 10px; /* Espaço entre os botões */
-    min-width: 80px; /* Largura mínima para evitar corte */
-}
-
-/* Botões de subir e descer */
-.scroll-button {
-    position: absolute;
-    width: calc(100% - 20px); /* Largura dos botões, menos o padding */
-    left: 10px; /* Centraliza horizontalmente */
-    background-color: #ff6347;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+    margin-right: 10px; 
+    min-width: 80px;
 }
 
 .scroll-button:hover {
     background-color: #ff4500;
 }
 
-/* Ajustes para os botões */
 .scroll-up {
-    top: 10px; /* Posiciona o botão de subir */
+    top: 10px;
 }
 
 .scroll-down {
-    bottom: 10px; /* Posiciona o botão de descer */
+    bottom: 10px;
 }
 .dragging {
     opacity: 0.5;
