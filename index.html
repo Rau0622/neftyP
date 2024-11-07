@@ -37,7 +37,7 @@
             cursor: pointer;
         }
 
-        /* Estilo para o fundo amarelo nas linhas com custo alto */
+        /* Estilo para o fundo nas linhas com custo alto */
         .high-cost-row {
             background-color: goldenrod;
         }
@@ -62,7 +62,6 @@
 
         <div id="tarefasTable"></div>
 
-        <!-- Formulário de Edição -->
         <div id="formularioEdicao" style="display: none;">
             <h2>Editar Tarefa</h2>
             <label for="edit_nome">Nome da Tarefa:</label>
@@ -80,7 +79,7 @@
     </div>
 
     <script>
-        const url = '/.netlify/functions/tarefas'; // URL para a função serverless
+        const url = '/.netlify/functions/tarefas';
         let tarefas = [];
         let tarefaAtualId = null;
 
@@ -92,13 +91,13 @@
             fetch(url)
                 .then(response => {
                     console.log('Resposta completa do backend:', response);
-                    return response.json(); // Tenta parsear o JSON da resposta
+                    return response.json();
                 })
                 .then(data => {
-                    console.log('Dados recebidos:', data); // Exibe os dados recebidos
+                    console.log('Dados recebidos:', data);
                     if (Array.isArray(data)) {
                         tarefas = data;
-                        atualizarTabela(); // Chama a função que atualiza a tabela na interface
+                        atualizarTabela();
                     } else {
                         throw new Error('Formato de dados inesperado');
                     }
@@ -123,20 +122,17 @@
                 const row = document.createElement('div');
                 row.className = 'task-row';
                 row.draggable = true;
-                row.dataset.index = index; // Adiciona o índice como dado da tarefa
+                row.dataset.index = index;
 
-                // Evento para o início do "drag-and-drop"
                 row.addEventListener('dragstart', (e) => {
                     row.classList.add('dragging');
-                    e.dataTransfer.setData('text/plain', index); // Salva o índice da tarefa
+                    e.dataTransfer.setData('text/plain', index);
                 });
 
-                // Remove o destaque quando a tarefa é solta
                 row.addEventListener('dragend', () => {
                     row.classList.remove('dragging');
                 });
 
-                // Destaca a tarefa na posição correta ao arrastar
                 row.addEventListener('dragover', (e) => e.preventDefault());
 
                 row.addEventListener('drop', (e) => {
@@ -159,7 +155,6 @@
                         <button onclick="excluirTarefa(${tarefa.id})">Excluir</button>
                     </div>`;
 
-                // Aplica a classe de fundo amarelo para linhas com custo maior ou igual a 1000
                 if (tarefa.custo >= 1000) {
                     row.classList.add('high-cost-row');
                 }
@@ -168,12 +163,10 @@
             });
         }
 
-        // Função para reordenar tarefas no array e atualizar o backend
         function reordenarTarefas(fromIndex, toIndex) {
             const tarefa = tarefas.splice(fromIndex, 1)[0];
             tarefas.splice(toIndex, 0, tarefa);
 
-            // Atualizar a ordem no backend após rearranjar localmente
             tarefas.forEach((tarefa, index) => {
                 fetch('/.netlify/functions/tarefas/ordem', {
                     method: 'PUT',
@@ -210,7 +203,7 @@
             })
             .then(data => {
                 console.log("Tarefa adicionada com sucesso:", data);
-                carregarTarefas(); // Atualiza a lista de tarefas
+                carregarTarefas();
             })
             .catch(error => {
                 console.error('Erro ao incluir tarefa:', error);
@@ -245,8 +238,8 @@
             })
             .then(response => response.json())
             .then(() => {
-                carregarTarefas(); // Atualiza a lista de tarefas
-                cancelarEdicao(); // Fecha o formulário de edição
+                carregarTarefas();
+                cancelarEdicao();
             })
             .catch(error => {
                 console.error('Erro ao editar tarefa:', error);
@@ -264,7 +257,7 @@
                 fetch(`${url}/${id}`, { method: 'DELETE' })
                     .then(response => {
                         if (response.ok) {
-                            carregarTarefas(); // Atualiza a lista de tarefas
+                            carregarTarefas();
                         } else {
                             alert("Erro ao excluir a tarefa.");
                         }
